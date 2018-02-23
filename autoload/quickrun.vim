@@ -566,12 +566,12 @@ function! s:Session.normalize(config) abort
   let config.command = get(config, 'command', config.type)
 
   if has_key(config, 'srcfile')
-    let config.srcfile = quickrun#expand(expand(config.srcfile))
+    let config.srcfile = iconv(quickrun#expand(expand(config.srcfile)), 'utf-8', 'cp932')
   elseif !has_key(config, 'src')
     if filereadable(expand('%:p')) &&
     \  !has_key(config, 'region') && !&modified
       " Use file in direct.
-      let config.srcfile = expand('%:p')
+      let config.srcfile = iconv(expand('%:p'), 'utf-8', 'cp932')
     else
       let config.region = get(config, 'region', {
       \   'first': [1, 0, 0],
@@ -759,7 +759,7 @@ function! s:Session.build_command(tmpl) abort
         endif
       endif
       let mod = matchstr(rest, '^\v\zs%(\:[p8~.htre]|\:g?s(.).{-}\1.{-}\1)*')
-      let value = fnamemodify(value, mod)
+      let value = iconv(fnamemodify(value, mod), 'cp932', 'utf-8')
       if symbol =~# '\U'
         let value = command =~# '^\s*:' ? fnameescape(value)
         \                               : self.runner.shellescape(value)
